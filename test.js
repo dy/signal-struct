@@ -9,8 +9,12 @@ signalStruct.signal = signal
 let s = signalStruct({
   x: 0,
   y: signal(1),
-  z: { r: 2, i: signal(3) }
+  z: { r: 2, i: signal(3) },
+  v: function(){return 1}
 })
+
+// holds non-reactive types as is
+assert.equal(s.v(), 1)
 
 // subscribes to only x and y without need for .value access
 const zilog = []
