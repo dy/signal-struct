@@ -47,3 +47,8 @@ assert.equal(len.value, 5, 'len after update')
 assert.throws(() => {
   s.w = 1
 }, 'not extendible')
+
+
+// re-initializing returns itself
+let s1 = signalStruct(s)
+assert.equal(s, s1)

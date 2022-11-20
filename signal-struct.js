@@ -1,8 +1,13 @@
 import { signal, batch } from '@preact/signals-core'
 
 const isSignal = v => v && v.peek
+const _struct = Symbol('signal-struct')
 
-export default function signalStruct (values) {
+export const isStruct = (v) => v[_struct]
+
+export default function SignalStruct (values) {
+  if (isStruct(values)) return values;
+
   // 1. convert values to signals
   const toSignal = (val) => {
     if (!val || typeof val === 'string' || typeof val === 'number') return signal(val)
@@ -29,11 +34,14 @@ export default function signalStruct (values) {
     else out = signals
 
     // expose batch-update & signals via destructure
-    if (isRoot) Object.defineProperty(out, Symbol.iterator, {
-      value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(out, diff)); },
-      enumerable: false,
-      configurable: false
-    });
+    if (isRoot) {
+      Object.defineProperty(out, Symbol.iterator, {
+        value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(out, diff)); },
+        enumerable: false,
+        configurable: false
+      });
+      out[_struct] = true
+    }
 
     return Object.seal(out)
   }
