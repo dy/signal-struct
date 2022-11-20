@@ -32,3 +32,14 @@ assert.equal(len.value, 5)
 s.z.r = 4
 s.z.i = 3
 assert.equal(len.value, 5)
+
+// bulk-update is deep
+let [signals, update] = s
+update({ x: 1, y: 1, z: { r: 3, i: 4 } })
+assert.equal(xy.value, 2)
+assert.equal(len.value, 5, 'len after update')
+
+// object cannot be extended
+assert.throws(() => {
+  s.w = 1
+}, 'not extendible')
