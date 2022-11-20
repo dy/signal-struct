@@ -11,7 +11,7 @@ export default function SignalStruct (values) {
   // 1. convert values to signals
   const toSignal = (val) => {
     if (!val || typeof val === 'string' || typeof val === 'number') return signal(val)
-    if (isSignal(val) || typeof val === 'function') return val
+    if (isSignal(val)) return val
     if (Array.isArray(val)) return Object.freeze(val.map(toSignal))
     if (isObject(val)) {
       return Object.freeze(Object.fromEntries(Object.entries(val).map(([key, val]) => [key, toSignal(val)])))

@@ -13,7 +13,7 @@ let s = signalStruct({
   v: function(){return 1}
 })
 
-// holds non-reactive types as is
+// functions are signals too
 assert.equal(s.v(), 1)
 
 // subscribes to only x and y without need for .value access
