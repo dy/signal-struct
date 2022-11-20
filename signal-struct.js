@@ -1,42 +1,61 @@
+import { signal, batch } from '@preact/signals-core'
+
 const isSignal = v => v && v.peek
 
-export default function signalStruct (values) {
-  const signal = signalStruct.signal;
-  if (!signal) throw Error('Signal must be defined');
-
+export default function signalStruct (values, root) {
   // 1. convert values to signals
-  const copyLevel = (val) => {
-    if (!val || typeof val === 'string' || typeof val === 'number')
-      return signal(val)
-    if (isSignal(val))
-      return val
-    if (Array.isArray(val))
-      return val.map(copyLevel)
-    if (val.constructor === Object)
-      return Object.fromEntries(Object.entries(val).map(([key, val]) => [key, copyLevel(val)]))
-
+  const toSignal = (val) => {
+    if (!val || typeof val === 'string' || typeof val === 'number') return signal(val)
+    if (isSignal(val)) return val
+    if (Array.isArray(val)) return val.map(toSignal)
+    if (Object(val) === val) {
+      return Object.fromEntries(Object.entries(val).map(([key, val]) => [key, toSignal(val)]))
+    }
     return signal(val)
   }
-  const signals = copyLevel(values);
+  const signals = toSignal(values);
 
   // 2. build recursive accessor for signals
   const toAccessor = (signals) => {
     let out
     if (Array.isArray(signals)) {
       out = []
-      for (let i = 0; i < signals.length; i++) defineAccessor(signals, i, out)
+      for (let i = 0; i < signals.length; i++) defineAccessor(signals[i], i, out)
     }
-    else if (signals.constructor === Object) {
+    else if (Object(signals) === signals) {
       out = {}
-      for (let key in signals) defineAccessor(signals, key, out)
+      for (let key in signals) defineAccessor(signals[key], key, out)
     }
     return out
   }
-  const defineAccessor = (signals, key, out) => {
-    let s = signals[key]
-    if (isSignal(s)) Object.defineProperty(out, key, { get(){ return s.value }, set(v){ s.value = v } })
-    else out[key] = toAccessor(s)
+  const defineAccessor = (signal, key, out) => {
+    if (isSignal(signal)) Object.defineProperty(out, key, {
+      get(){ return signal.value }, set(v){ signal.value = v },
+      enumerable: true, configurable: false
+    })
+    else out[key] = toAccessor(signal)
   }
 
-  return toAccessor(signals)
+  let state = toAccessor(signals)
+
+  // expose batch-update & signals via destructure
+  Object.defineProperty(state, Symbol.iterator, {
+    value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(state, diff)); },
+    enumerable: false,
+    configurable: false
+  });
+
+
+  return state
+}
+
+function deepAssign(target, source) {
+  for (let k in source) {
+    let vs = source[k], vt = target[k]
+    if (Object(vs) === vs && Object(vt) === vt) {
+      target[k] = deepAssign(vt, vs)
+    }
+    else target[k] = source[k]
+  }
+  return target
 }
