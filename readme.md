@@ -3,13 +3,10 @@
 > Structure for storing/handling multiple signals
 
 ```js
-import signalStruct from 'signal-struct'
-import { signal, computed } from '@preact/singals'
+import SignalStruct from 'signal-struct'
+import { computed } from '@preact/signals-core'
 
-// define signal lib to use
-signalStruct.signal = signal
-
-let s = signalStruct({
+let s = SignalStruct({
   x: 0,
   y: signal(1),
   z: { r: 2, i: signal(3) }
@@ -26,6 +23,11 @@ let len = computed(() => (s.z.r**2 + s.z.i**2)**0.5)
 s.z.r = 3
 s.z.i = 4
 len.value // 5
+
+// exposes internals for access to signals or bulk update
+let [signals, update] = s
+update({ x: 1, y: 1 })
+xy.value // 2
 ```
 
 Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usignal](https://www.npmjs.com/package/usignal), [value-ref](https://github.com/dy/value-ref).

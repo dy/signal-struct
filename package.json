@@ -28,5 +28,8 @@
   "devDependencies": {
     "@preact/signals": "^1.1.2",
     "usignal": "^0.8.9"
+  },
+  "dependencies": {
+    "@preact/signals-core": "^1.2.2"
   }
 }
