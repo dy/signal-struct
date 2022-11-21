@@ -24,6 +24,10 @@ s.z.r = 3
 s.z.i = 4
 len.value // 5
 
+// FIXME: updating internal objects/arrays turns them into signals too
+s.z = { r: 5, i: 12}
+len.value // 13
+
 // exposes internals for access to signals or bulk update
 let [signals, update] = s
 update({ x: 1, y: 1 })
