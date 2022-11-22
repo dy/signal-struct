@@ -44,6 +44,9 @@ update({ x: 1, y: 1, z: { r: 3, i: 4 } })
 assert.equal(xy.value, 2)
 assert.equal(len.value, 5, 'len after update')
 
+// signals retain same type as init data
+assert.equal(signals.constructor, Object)
+
 // object cannot be extended
 assert.throws(() => {
   s.w = 1

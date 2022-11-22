@@ -16,7 +16,7 @@ export default function SignalStruct (values) {
     for (let i = 0; i < values.length; i++) signals.push(defineSignal(state, i, values[i]))
   }
   else if (isObject(values)) {
-    state = {}, signals = []
+    state = {}, signals = {}
     for (let key in values) signals[key] = defineSignal(state, key, values[key])
   }
   else throw Error('Only array or object states are supported')
