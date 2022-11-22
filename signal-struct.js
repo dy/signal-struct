@@ -1,6 +1,6 @@
 import { signal, batch } from '@preact/signals-core'
 
-const isSignal = v => v && v.peek
+export const isSignal = v => v && v.peek
 const memo = new WeakSet
 
 export const isStruct = (v) => memo.has(v)
