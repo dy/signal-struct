@@ -1,61 +1,63 @@
 import { signal, batch } from '@preact/signals-core'
 
 const isSignal = v => v && v.peek
-const _struct = Symbol('signal-struct')
+const memo = new WeakSet
 
-export const isStruct = (v) => v[_struct]
+export const isStruct = (v) => memo.has(v)
 
 export default function SignalStruct (values) {
   if (isStruct(values)) return values;
 
-  // 1. convert values to signals
-  const toSignal = (val) => {
-    if (!val || typeof val === 'string' || typeof val === 'number') return signal(val)
-    if (isSignal(val)) return val
-    if (Array.isArray(val)) return Object.freeze(val.map(toSignal))
-    if (isObject(val)) {
-      return Object.freeze(Object.fromEntries(Object.entries(val).map(([key, val]) => [key, toSignal(val)])))
-    }
-    return signal(val)
+  // define signal accessors
+  // FIXME: alternately can be done as Proxy for extended support
+  let state, signals
+  if (Array.isArray(values)) {
+    state = [], signals = []
+    for (let i = 0; i < values.length; i++) signals.push(defineSignal(state, i, values[i]))
   }
-  const signals = toSignal(values);
-
-  // 2. build recursive accessor for signals
-  const toAccessor = (signals, isRoot) => {
-    let out
-    if (Array.isArray(signals)) {
-      out = []
-      for (let i = 0; i < signals.length; i++) defineAccessor(signals[i], i, out)
-    }
-    else if (isObject(signals)) {
-      out = {}
-      for (let key in signals) defineAccessor(signals[key], key, out)
-    }
-    else out = signals
-
-    // expose batch-update & signals via destructure
-    if (isRoot) {
-      Object.defineProperty(out, Symbol.iterator, {
-        value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(out, diff)); },
-        enumerable: false,
-        configurable: false
-      });
-      out[_struct] = true
-    }
-
-    return Object.seal(out)
+  else if (isObject(values)) {
+    state = {}, signals = []
+    for (let key in values) signals[key] = defineSignal(state, key, values[key])
   }
-  const defineAccessor = (signal, key, out) => {
-    if (isSignal(signal)) Object.defineProperty(out, key, {
-      get(){ return signal.value }, set(v){ signal.value = v },
-      enumerable: true, configurable: false
-    })
-    else out[key] = toAccessor(signal)
-  }
+  else throw Error('Only array or object states are supported')
 
-  let state = toAccessor(signals, true)
+  // expose batch-update & signals via destructure
+  Object.defineProperty(state, Symbol.iterator, {
+    value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(state, diff)); },
+    enumerable: false,
+    configurable: false
+  });
+  Object.seal(state)
+  memo.add(state)
 
   return state
+}
+
+
+export function defineSignal (state, key, value) {
+  let s
+  if (!isSignal(value) && (Array.isArray(value) || isObject(value))) {
+    s = signal(SignalStruct(value))
+    Object.defineProperty(state, key, {
+      get() { return s.value },
+      set(newValue) {
+        // if new value is array or object - convert it to signal struct
+        s.value = SignalStruct(newValue)
+      },
+      enumerable: true,
+      configurable: false
+    })
+  }
+  else {
+    s = isSignal(value) ? value : signal(value)
+    Object.defineProperty(state, key, {
+      get(){ return s.value },
+      set(newValue){ s.value = newValue },
+      enumerable: true,
+      configurable: false
+    })
+  }
+  return s
 }
 
 function deepAssign(target, source) {
