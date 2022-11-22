@@ -33,7 +33,7 @@ export default function SignalStruct (values) {
   return state
 }
 
-
+// defines signal accessor on an object
 export function defineSignal (state, key, value) {
   let s
   if (!isSignal(value) && (Array.isArray(value) || isObject(value))) {
