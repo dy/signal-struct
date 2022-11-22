@@ -18,13 +18,13 @@ s.x = 2
 s.y = 3
 xy.value // 5
 
-// subscribes to deep values too: only z.r and z.i update result
+// subscribes to deep values too: only z.r and z.i update the `len`
 let len = computed(() => (s.z.r**2 + s.z.i**2)**0.5)
 s.z.r = 3
 s.z.i = 4
 len.value // 5
 
-// FIXME: updating internal objects/arrays turns them into signals too
+// updating internal objects/arrays turns them into signals too
 s.z = { r: 5, i: 12}
 len.value // 13
 
