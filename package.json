@@ -1,6 +1,6 @@
 {
   "name": "signal-struct",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Cumulative signal structure",
   "main": "signal-struct.js",
   "type": "module",
