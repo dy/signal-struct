@@ -1,4 +1,4 @@
-import { signal, batch } from '@preact/signals-core'
+import { signal } from '@preact/signals-core'
 
 export const isSignal = v => v && v.peek
 const memo = new WeakSet
@@ -21,12 +21,6 @@ export default function SignalStruct (values) {
   }
   else throw Error('Only array or object states are supported')
 
-  // expose batch-update & signals via destructure
-  Object.defineProperty(state, Symbol.iterator, {
-    value: function*(){ yield signals; yield (diff) => batch(() => deepAssign(state, diff)); },
-    enumerable: false,
-    configurable: false
-  });
   Object.seal(state)
   memo.add(state)
 
@@ -35,40 +29,24 @@ export default function SignalStruct (values) {
 
 // defines signal accessor on an object
 export function defineSignal (state, key, value) {
-  let s
-  if (!isSignal(value) && (Array.isArray(value) || isObject(value))) {
-    s = signal(SignalStruct(value))
-    Object.defineProperty(state, key, {
-      get() { return s.value },
-      set(newValue) {
-        // if new value is array or object - convert it to signal struct
-        s.value = SignalStruct(newValue)
-      },
-      enumerable: true,
-      configurable: false
-    })
-  }
-  else {
-    s = isSignal(value) ? value : signal(value)
-    Object.defineProperty(state, key, {
-      get(){ return s.value },
-      set(newValue){ s.value = newValue },
-      enumerable: true,
-      configurable: false
-    })
-  }
-  return s
-}
+  let s = isSignal(value) ? value : (Array.isArray(value) || isObject(value)) ? signal(SignalStruct(value)) : signal(value)
 
-function deepAssign(target, source) {
-  for (let k in source) {
-    let vs = source[k], vt = target[k]
-    if (isObject(vs) && isObject(vt)) {
-      target[k] = deepAssign(vt, vs)
-    }
-    else target[k] = source[k]
-  }
-  return target
+  Object.defineProperty(state, key, {
+    get() { return s.value },
+    set:
+      isSignal(value) ? v => s.value = v :
+      // FIXME: object can be extended
+      isObject(value) ? v => Object.assign(s.value, v) :
+      // FIXME: array can have same lenght/members
+      // if new value is array or object - convert it to signal struct
+      Array.isArray(value) ? v => s.value = SignalStruct(v) :
+      v => s.value = v
+    ,
+    enumerable: true,
+    configurable: false
+  })
+
+  return s
 }
 
 function isObject(v) {

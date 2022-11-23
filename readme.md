@@ -4,7 +4,7 @@
 
 ```js
 import SignalStruct from 'signal-struct'
-import { computed } from '@preact/signals-core'
+import { computed, batch } from '@preact/signals-core'
 
 let s = SignalStruct({
   x: 0,
@@ -28,9 +28,8 @@ len.value // 5
 s.z = { r: 5, i: 12}
 len.value // 13
 
-// exposes internals for access to signals or bulk update
-let [signals, update] = s
-update({ x: 1, y: 1 })
+// update multiple props
+batch(() => Object.assign(s, { x: 1, y: 1 }))
 xy.value // 2
 ```
 
