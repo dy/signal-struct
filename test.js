@@ -45,6 +45,9 @@ assert.equal(mult.value, 2)
 s.w = [3,4]
 assert.equal(mult.value,12)
 
+// nullifying is fine
+s.w = null
+
 // bulk-update is deep
 // let [signals, update] = s
 // update({ x: 1, y: 1, z: { r: 3, i: 4 } })
