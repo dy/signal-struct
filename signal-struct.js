@@ -35,11 +35,11 @@ export function defineSignal (state, key, value) {
     get() { return s.value },
     set:
       isSignal(value) ? v => s.value = v :
-      // FIXME: object can be extended
-      isObject(value) ? v => Object.assign(s.value, v) :
       // FIXME: array can have same lenght/members
       // if new value is array or object - convert it to signal struct
       Array.isArray(value) ? v => s.value = SignalStruct(v) :
+      // FIXME: object can be extended
+      isObject(value) ? v => Object.assign(s.value, v) :
       v => s.value = v
     ,
     enumerable: true,

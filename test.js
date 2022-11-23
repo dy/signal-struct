@@ -8,7 +8,8 @@ let s = signalStruct({
   x: 0,
   y: signal(1),
   z: { r: 2, i: signal(3) },
-  v: function(){return 1}
+  v: function(){return 1},
+  w: [1,2]
 })
 
 // functions are signals too
@@ -37,6 +38,12 @@ assert.equal(len.value, 5)
 // updating internal objects/arrays turns them into signals too
 s.z = { r: 5, i: 12}
 assert.equal(len.value, 13)
+
+// updating array is fine
+let mult = computed(() => s.w[0] * s.w[1])
+assert.equal(mult.value, 2)
+s.w = [3,4]
+assert.equal(mult.value,12)
 
 // bulk-update is deep
 // let [signals, update] = s
