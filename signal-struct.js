@@ -1,9 +1,8 @@
 import { signal } from '@preact/signals-core'
 
-export const isSignal = v => v && v.peek
-const memo = new WeakSet
-
-export const isStruct = (v) => memo.has(v)
+const isSignal = v => v && v.peek
+const isStruct = (v) => v[_struct]
+const _struct = Symbol('signal-struct')
 
 export default function SignalStruct (values) {
   if (isStruct(values)) return values;
@@ -21,8 +20,9 @@ export default function SignalStruct (values) {
   }
   else throw Error('Only array or object states are supported')
 
+  Object.defineProperty(state, _struct, {configurable:false,enumerable:false,value:true})
+
   Object.seal(state)
-  memo.add(state)
 
   return state
 }

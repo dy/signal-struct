@@ -80,6 +80,11 @@ for (let i of s2) log.push(i)
 assert.deepEqual(log, [], 'doesn\'t iterate')
 
 
+// descendants are detected as instances
+let s3 = Object.create(s2), s3s = signalStruct(s3)
+assert.equal(s3, s3s)
+
+
 function deepAssign(target, source) {
   for (let k in source) {
     let vs = source[k], vt = target[k]
