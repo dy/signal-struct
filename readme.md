@@ -31,8 +31,18 @@ len.value // 13
 // update multiple props
 batch(() => Object.assign(s, { x: 1, y: 1 }))
 xy.value // 2
+
+// can subscribe to reactive sources too
+let s2 = SignalStruct({
+  p: new Promise(ok => setTimeout(() => ok(123)))
+})
+s2.p  // null
+      //... after 1 tick
+s2.p  // 123
 ```
 
-Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usignal](https://www.npmjs.com/package/usignal), [value-ref](https://github.com/dy/value-ref).
+Supported reactive sources: see [sube](https://github.com/dy/sube).
+<!--
+Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usignal](https://www.npmjs.com/package/usignal), [value-ref](https://github.com/dy/value-ref). -->
 
 <p align="center"><a href="https://github.com/krsnzd/license/">🕉</a></p>

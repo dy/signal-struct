@@ -85,13 +85,11 @@ let s3 = Object.create(s1), s3s = signalStruct(s3)
 assert.equal(s3, s3s)
 
 
-function deepAssign(target, source) {
-  for (let k in source) {
-    let vs = source[k], vt = target[k]
-    if ((vs.constructor === Object) && (vt.constructor === Object)) {
-      target[k] = deepAssign(vt, vs)
-    }
-    else target[k] = source[k]
-  }
-  return target
-}
+// can subscribe to reactive sources too
+let s2 = signalStruct({
+  p: new Promise(ok => setTimeout(() => ok(123)))
+})
+assert.equal(s2.p, undefined)
+setTimeout(() => {
+  assert.equal(s2.p, 123)
+})

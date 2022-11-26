@@ -30,6 +30,7 @@
     "usignal": "^0.8.9"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.2.2"
+    "@preact/signals-core": "^1.2.2",
+    "sube": "^2.2.1"
   }
 }

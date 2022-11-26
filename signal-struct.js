@@ -1,4 +1,5 @@
-import { signal } from '@preact/signals-core'
+import { signal, computed } from '@preact/signals-core'
+import sube, { observable } from 'sube'
 
 const isSignal = v => v && v.peek
 const isStruct = (v) => v[_struct]
@@ -25,7 +26,11 @@ export default function SignalStruct (values) {
 
 // defines signal accessor on an object
 export function defineSignal (state, key, value) {
-  let s = isSignal(value) ? value : isObject(value) ? signal(SignalStruct(value)) : signal(value)
+  let isObservable, s = isSignal(value) ? value :
+      isObject(value) ? signal(SignalStruct(value)) :
+      signal((isObservable = observable(value)) ? undefined : value)
+
+  if (isObservable) sube(value, v => s.value = v)
 
   Object.defineProperty(state, key, {
     get() { return s.value },
