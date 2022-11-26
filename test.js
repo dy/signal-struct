@@ -60,7 +60,7 @@ assert.equal(len.value, 5, 'len after update')
 
 // object cannot be extended
 assert.throws(() => {
-  s.w = 1
+  s.r = 1
 }, 'not extendible')
 
 // cannot create from primitive
@@ -74,14 +74,14 @@ assert.equal(s, s1)
 
 
 // it is not enumerable
-let s2 = signalStruct([])
-let log = []
-for (let i of s2) log.push(i)
-assert.deepEqual(log, [], 'doesn\'t iterate')
+// let s2 = signalStruct([])
+// let log = []
+// for (let i of s2) log.push(i)
+// assert.deepEqual(log, [], 'doesn\'t iterate')
 
 
 // descendants are detected as instances
-let s3 = Object.create(s2), s3s = signalStruct(s3)
+let s3 = Object.create(s1), s3s = signalStruct(s3)
 assert.equal(s3, s3s)
 
 

@@ -10,11 +10,7 @@ export default function SignalStruct (values) {
   // define signal accessors
   // FIXME: alternately can be done as Proxy for extended support
   let state, signals
-  if (Array.isArray(values)) {
-    state = [], signals = []
-    for (let i = 0; i < values.length; i++) signals.push(defineSignal(state, i, values[i]))
-  }
-  else if (isObject(values)) {
+  if (isObject(values)) {
     state = {}, signals = {}
     for (let key in values) signals[key] = defineSignal(state, key, values[key])
   }
@@ -29,16 +25,12 @@ export default function SignalStruct (values) {
 
 // defines signal accessor on an object
 export function defineSignal (state, key, value) {
-  let s = isSignal(value) ? value : (Array.isArray(value) || isObject(value)) ? signal(SignalStruct(value)) : signal(value)
+  let s = isSignal(value) ? value : isObject(value) ? signal(SignalStruct(value)) : signal(value)
 
   Object.defineProperty(state, key, {
     get() { return s.value },
     set:
       isSignal(value) ? v => s.value = v :
-      // FIXME: array can have same lenght/members
-      // if new value is array or object - convert it to signal struct
-      Array.isArray(value) ? v => (s.value = v ? SignalStruct(v) : v) :
-      // FIXME: object can be extended
       isObject(value) ? v => (v ? Object.assign(s.value, v) : s.value = v) :
       v => s.value = v
     ,
@@ -50,5 +42,5 @@ export function defineSignal (state, key, value) {
 }
 
 function isObject(v) {
-  return typeof v === 'object' && v !== null
+  return v && v.constructor === Object
 }
