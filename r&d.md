@@ -24,7 +24,7 @@
 * reactive-struct
   + more generic and precise
 
-## Convert to reactive-struct?
+## [ ] Convert to reactive-struct?
 
 + supports any-kind of reactive input
 + subscribes flexibly to any required deps
