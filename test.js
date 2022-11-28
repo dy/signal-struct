@@ -1,7 +1,7 @@
 
 import signalStruct from './signal-struct.js'
 import { signal, computed, effect, batch } from '@preact/signals-core'
-// import { signal, computed, effect } from 'usignal/sync'
+// import { signal, computed, effect, batch } from 'usignal/sync'
 import assert from 'node:assert'
 
 let s = signalStruct({
@@ -64,9 +64,9 @@ assert.throws(() => {
 }, 'not extendible')
 
 // cannot create from primitive
-assert.throws(() => {
-  signalStruct(2)
-}, 'not supported')
+// assert.throws(() => {
+//   signalStruct(2)
+// }, 'not supported')
 
 // re-initializing returns itself
 let s1 = signalStruct(s)
@@ -74,10 +74,10 @@ assert.equal(s, s1)
 
 
 // it is not enumerable
-// let s2 = signalStruct([])
-// let log = []
-// for (let i of s2) log.push(i)
-// assert.deepEqual(log, [], 'doesn\'t iterate')
+let s2 = signalStruct([])
+let log = []
+for (let i of s2) log.push(i)
+assert.deepEqual(log, [], 'doesn\'t iterate')
 
 
 // descendants are detected as instances
@@ -86,10 +86,22 @@ assert.equal(s3, s3s)
 
 
 // can subscribe to reactive sources too
-let s2 = signalStruct({
+let s4 = signalStruct({
   p: new Promise(ok => setTimeout(() => ok(123)))
 })
-assert.equal(s2.p, undefined)
+assert.equal(s4.p, undefined)
 setTimeout(() => {
-  assert.equal(s2.p, 123)
+  assert.equal(s4.p, 123)
 })
+
+// arrays get each item converted to signal struct
+let s5 = signalStruct({list: [{x:1}, {x:2}]})
+let sum = computed(()=> s5.list.reduce((sum, item)=>item.x + sum, 0))
+assert.equal(sum.value, 3)
+s5.list[0].x = 2
+assert.equal(sum.value, 4)
+console.log('set array value')
+s5.list = [{x:3}, {x:3}]
+assert.equal(sum.value, 6)
+s5.list = [{x:3}, {x:3}, {x:4}]
+assert.equal(sum.value, 10)

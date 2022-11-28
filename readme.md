@@ -37,7 +37,7 @@ let s2 = SignalStruct({
   p: new Promise(ok => setTimeout(() => ok(123)))
 })
 s2.p  // null
-      //... after 1 tick
+// ...
 s2.p  // 123
 ```
 

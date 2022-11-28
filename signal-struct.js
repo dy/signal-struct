@@ -1,33 +1,37 @@
-import { signal, computed } from '@preact/signals-core'
+import { signal } from '@preact/signals-core'
+// import { signal } from 'usignal/sync'
 import sube, { observable } from 'sube'
 
 const isSignal = v => v && v.peek
-const isStruct = (v) => v[_struct]
+const isStruct = (v) => v && v[_struct]
 const _struct = Symbol('signal-struct')
 
 export default function SignalStruct (values) {
   if (isStruct(values)) return values;
 
-  // define signal accessors
+  // define signal accessors - creates signals for all object props
   // FIXME: alternately can be done as Proxy for extended support
   let state, signals
+
   if (isObject(values)) {
     state = {}, signals = {}
     for (let key in values) signals[key] = defineSignal(state, key, values[key])
+    Object.defineProperty(state, _struct, {configurable:false,enumerable:false,value:true})
+    Object.seal(state)
+    return state
   }
-  else throw Error('Only array or object states are supported')
 
-  Object.defineProperty(state, _struct, {configurable:false,enumerable:false,value:true})
+  if (Array.isArray(values)) {
+    return values.map(v => SignalStruct(v))
+  }
 
-  Object.seal(state)
-
-  return state
+  return values
 }
 
 // defines signal accessor on an object
 export function defineSignal (state, key, value) {
   let isObservable, s = isSignal(value) ? value :
-      isObject(value) ? signal(SignalStruct(value)) :
+      isObject(value) || Array.isArray(value) ? signal(SignalStruct(value)) :
       signal((isObservable = observable(value)) ? undefined : value)
 
   if (isObservable) sube(value, v => s.value = v)
@@ -35,9 +39,10 @@ export function defineSignal (state, key, value) {
   Object.defineProperty(state, key, {
     get() { return s.value },
     set:
-      isSignal(value) ? v => s.value = v :
-      isObject(value) ? v => (v ? Object.assign(s.value, v) : s.value = v) :
-      v => s.value = v
+      // FIXME: we can turn new props into defined props
+      !isSignal(value) && isObject(value) ? v => (v ? Object.assign(s.value, v) : s.value = SignalStruct(v)) :
+      // FIXME: if array contains objects, they can get merged instead of recreating
+      v => (s.value = SignalStruct(v))
     ,
     enumerable: true,
     configurable: false

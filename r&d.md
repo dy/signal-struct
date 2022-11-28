@@ -28,3 +28,7 @@
 
 + supports any-kind of reactive input
 + subscribes flexibly to any required deps
+
+## [ ] Convert input getters into computables?
+
++ allows subscribing to actual getter values
