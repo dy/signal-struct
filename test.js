@@ -4,10 +4,11 @@ import { signal, computed, effect, batch } from '@preact/signals-core'
 // import { signal, computed, effect, batch } from 'usignal/sync'
 import assert from 'node:assert'
 
+let i = signal(3)
 let s = signalStruct({
   x: 0,
   y: signal(1),
-  z: { r: 2, i: signal(3) },
+  z: { r: 2, i },
   v: function(){return 1},
   w: [1,2]
 })
@@ -38,6 +39,8 @@ assert.equal(len.value, 5)
 // updating internal objects/arrays turns them into signals too
 s.z = { r: 5, i: 12}
 assert.equal(len.value, 13)
+// i.value = 20
+// assert.equal(len.value, 13)
 
 // updating array is fine
 let mult = computed(() => s.w[0] * s.w[1])
