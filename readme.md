@@ -4,12 +4,13 @@
 
 ```js
 import SignalStruct from 'signal-struct'
-import { computed, batch } from '@preact/signals-core'
+import { signal, computed, batch } from '@preact/signals-core'
 
 let s = SignalStruct({
   x: 0,
   y: signal(1),
-  z: { r: 2, i: signal(3) }
+  z: { r: 2, i: signal(3) },
+  get w() { return this.x * this.y }
 });
 
 // subscribes to only x and y without need for .value access
@@ -24,13 +25,16 @@ s.z.r = 3
 s.z.i = 4
 len.value // 5
 
-// updating internal objects/arrays turns them into signals too
+// updating internal objects turns them into signals too
 s.z = { r: 5, i: 12}
 len.value // 13
 
 // update multiple props
 batch(() => Object.assign(s, { x: 1, y: 1 }))
 xy.value // 2
+
+// getter is turned into computed
+s.w // 1
 
 // can subscribe to reactive sources too
 let s2 = SignalStruct({

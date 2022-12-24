@@ -10,7 +10,8 @@ let s = signalStruct({
   y: signal(1),
   z: { r: 2, i },
   v: function(){return 1},
-  w: [1,2]
+  w: [1,2],
+  get xy () { return this.x + this.y }
 })
 
 // functions are signals too
@@ -26,6 +27,9 @@ assert.equal(xy.value, 5)
 s.y = 4
 assert.equal(xy.value, 6)
 assert.deepEqual(zilog, [3])
+
+// getters are computed
+assert.equal(s.xy, 6)
 
 // subscribes to deep values too: only z.r and z.i update result
 let len = computed(() => (s.z.r**2 + s.z.i**2)**0.5)
@@ -59,7 +63,7 @@ assert.equal(xy.value, 2)
 assert.equal(len.value, 5, 'len after update')
 
 // signals retain same type as init data
-// assert.equal(signals.constructor, Object)
+assert.equal(s.constructor, Object)
 
 // object cannot be extended
 assert.throws(() => {
@@ -108,3 +112,6 @@ s5.list = [{x:3}, {x:3}]
 assert.equal(sum.value, 6)
 s5.list = [{x:3}, {x:3}, {x:4}]
 assert.equal(sum.value, 10)
+
+
+// getters converted to computed
