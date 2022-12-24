@@ -27,6 +27,7 @@
   "homepage": "https://github.com/dy/signal-struct#readme",
   "devDependencies": {
     "@preact/signals": "^1.1.2",
+    "@webreflection/signal": "^0.2.5",
     "usignal": "^0.8.9"
   },
   "dependencies": {

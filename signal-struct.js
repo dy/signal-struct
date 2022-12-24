@@ -1,5 +1,6 @@
 import { signal, computed } from '@preact/signals-core'
-// import { signal } from 'usignal/sync'
+// import { signal, computed } from 'usignal/sync'
+// import { signal, computed } from '@webreflection/signal'
 import sube, { observable } from 'sube'
 
 const isSignal = v => v && v.peek
