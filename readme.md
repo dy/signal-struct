@@ -1,12 +1,12 @@
 # signal-struct
 
-> Structure for storing/handling multiple signals
+> Structure for storing/handling multiple signals or reactive values
 
 ```js
-import SignalStruct from 'signal-struct'
+import signalStruct from 'signal-struct'
 import { signal, computed, batch } from '@preact/signals-core'
 
-let s = SignalStruct({
+let s = signalStruct({
   x: 0,
   y: signal(1),
   z: { r: 2, i: signal(3) },
@@ -36,8 +36,8 @@ xy.value // 2
 // getter is turned into computed
 s.w // 1
 
-// can subscribe to reactive sources too
-let s2 = SignalStruct({
+// can subscribe to reactive sources
+let s2 = signalStruct({
   p: new Promise(ok => setTimeout(() => ok(123)))
 })
 s2.p  // null

@@ -66,9 +66,9 @@ assert.equal(len.value, 5, 'len after update')
 assert.equal(s.constructor, Object)
 
 // object cannot be extended
-assert.throws(() => {
-  s.r = 1
-}, 'not extendible')
+// assert.throws(() => {
+//   s.r = 1
+// }, 'not extendible')
 
 // cannot create from primitive
 // assert.throws(() => {

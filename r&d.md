@@ -24,11 +24,11 @@
 * reactive-struct
   + more generic and precise
 
-## [ ] Convert to reactive-struct?
+## [x] Convert to reactive-struct? -> yes, but keep name
 
 + supports any-kind of reactive input
 + subscribes flexibly to any required deps
 
-## [ ] Convert input getters into computables?
+## [x] Convert input getters into computables? -> yes
 
 + allows subscribing to actual getter values
