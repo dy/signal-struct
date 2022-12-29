@@ -101,6 +101,13 @@ setTimeout(() => {
   assert.equal(s4.p, 123)
 })
 
+let s43 = signalStruct(s4,s3)
+setTimeout(() => {
+  assert.equal(s43.p,123)
+  assert.equal(s43.y,1)
+})
+
+
 // arrays get each item converted to signal struct
 let s5 = signalStruct({list: [{x:1}, {x:2}]})
 let sum = computed(()=> s5.list.reduce((sum, item)=>item.x + sum, 0))

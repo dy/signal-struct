@@ -9,17 +9,19 @@ const _struct = Symbol('signal-struct')
 
 signalStruct.isStruct = isStruct
 
-export default function signalStruct (values) {
-  if (isStruct(values)) return values;
+export default function signalStruct (values, proto) {
+  if (isStruct(values) && !proto) return values;
 
   // define signal accessors - creates signals for all object props
   // FIXME: alternately can be done as Proxy for extended support
   let state, signals
 
   if (isObject(values)) {
-    state = {}, signals = {}
+    state = Object.create(proto || Object.getPrototypeOf(values)), signals = {}
     let desc = Object.getOwnPropertyDescriptors(values)
-    for (let key in desc) signals[key] = defineSignal(state, key, desc[key].get ? computed(desc[key].get.bind(state)) : desc[key].value)
+    if (isStruct(values)) for (let key in desc) Object.defineProperty(state, key, desc[key])
+    else for (let key in desc) signals[key] = defineSignal(state, key, desc[key].get ? computed(desc[key].get.bind(state)) : desc[key].value)
+
     Object.defineProperty(state, _struct, {configurable:false,enumerable:false,value:true})
     return state
   }
@@ -55,5 +57,5 @@ export function defineSignal (state, key, value) {
 }
 
 function isObject(v) {
-  return v && v.constructor === Object
+  return (v && v.constructor === Object)
 }

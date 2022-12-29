@@ -43,6 +43,11 @@ let s2 = signalStruct({
 s2.p  // null
 // ...
 s2.p  // 123
+
+// can inherit from proto, including other struct
+let s3 = signalStruct({v:456}, s2)
+s3.p // 123
+s3.v // 456
 ```
 
 Supported reactive sources: see [sube](https://github.com/dy/sube).
