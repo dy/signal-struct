@@ -37,30 +37,30 @@ export default function signalStruct (values, proto) {
       // regular value creates signal accessor
       else {
         let value = desc.value
-        let isObservable,
-          s = isSignal(value) ? value :
-          // FIXME: why do we wrap signal struct into signal here?
-          isObject(value) || Array.isArray(value) ? signal(signalStruct(value)) :
-          signal((isObservable = observable(value)) ? undefined : value)
+        let isObservable = observable(value),
+          s = signals[key] = isSignal(value) ? value :
+          // if initial value is an object - we turn it into sealed struct
+          signal(
+            isObservable ? undefined :
+            isObject(value) ? Object.seal(signalStruct(value)) :
+            Array.isArray(value) ? signalStruct(value) :
+            value
+          )
 
         // observables handle
         if (isObservable) sube(value, v => s.value = v)
-
-        // save signal to signals hash
-        signals[key] = s
 
         // define property accessor on struct
         Object.defineProperty(state, key, {
           get() { return s.value },
           set(v) {
             if (isObject(v)) {
-              // new object can have another schema than the new one, therefore we try
-              if (isObject(s.value)) try {
-                Object.assign(s.value, v);
-                return
-              } catch (e) {}
-              s.value = signalStruct(v)
+              // new object can have another schema than the new one
+              // so if it throws due to new props access then we fall back to creating new struct
+              if (isObject(s.value)) try { Object.assign(s.value, v); return } catch (e) {}
+              s.value = Object.seal(signalStruct(v));
             }
+            else if (Array.isArray(v)) s.value = signalStruct(v)
             else s.value = v;
           },
           enumerable: true,
@@ -70,10 +70,12 @@ export default function signalStruct (values, proto) {
     }
 
     Object.defineProperty(state, _struct, {configurable:false,enumerable:false,value:true})
+
     return state
   }
 
-  if (Array.isArray(values)) {
+  // for arrays we turn internals to signal structs
+  if (Array.isArray(values) && !isStruct(values[0])) {
     return values.map(v => signalStruct(v))
   }
 
