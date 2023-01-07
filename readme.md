@@ -10,7 +10,7 @@ let s = signalStruct({
   x: 0,
   y: signal(1),
   z: { r: 2, i: signal(3) },
-  get w() { return this.x * this.y }
+  get v() { return this.x * this.y }, // computed
 });
 
 // subscribes to only x and y without need for .value access
@@ -33,8 +33,8 @@ len.value // 13
 batch(() => Object.assign(s, { x: 1, y: 1 }))
 xy.value // 2
 
-// getter is turned into computed
-s.w // 1
+// getter is computed
+s.v // 1
 
 // can subscribe to reactive sources
 let s2 = signalStruct({

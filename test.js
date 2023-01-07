@@ -11,7 +11,8 @@ let s = signalStruct({
   z: { r: 2, i },
   v: function(){return 1},
   w: [1,2],
-  get xy () { return this.x + this.y }
+  get xy () { return this.x + this.y },
+  set xy ([x,y]) { return this.x = x, this.y = y }
 })
 
 // functions are signals too
@@ -29,6 +30,10 @@ assert.equal(xy.value, 6)
 assert.deepEqual(zilog, [3])
 
 // getters are computed
+assert.equal(s.xy, 6)
+s.xy = [4,2]
+assert.equal(s.x, 4)
+assert.equal(s.y, 2)
 assert.equal(s.xy, 6)
 
 // subscribes to deep values too: only z.r and z.i update result
@@ -119,6 +124,3 @@ s5.list = [{x:3}, {x:3}]
 assert.equal(sum.value, 6)
 s5.list = [{x:3}, {x:3}, {x:4}]
 assert.equal(sum.value, 10)
-
-
-// getters converted to computed
