@@ -54,4 +54,8 @@ Supported reactive sources: see [sube](https://github.com/dy/sube).
 <!--
 Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usignal](https://www.npmjs.com/package/usignal), [value-ref](https://github.com/dy/value-ref). -->
 
+## Alternatives
+
+* [deepsignal](https://github.com/luisherranz/deepsignal)
+
 <p align="center"><a href="https://github.com/krsnzd/license/">🕉</a></p>
