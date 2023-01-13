@@ -124,3 +124,9 @@ s5.list = [{x:3}, {x:3}]
 assert.equal(sum.value, 6)
 s5.list = [{x:3}, {x:3}, {x:4}]
 assert.equal(sum.value, 10)
+
+// arrays retain reference
+let list = [1,2,3]
+let s6 = signalStruct({list})
+s6.list[1] = 4
+assert.deepEqual(list,[1,4,3])

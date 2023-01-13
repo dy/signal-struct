@@ -76,7 +76,7 @@ export default function signalStruct (values, proto) {
 
   // for arrays we turn internals to signal structs
   if (Array.isArray(values) && !isStruct(values[0])) {
-    return values.map(v => signalStruct(v))
+    for (let i = 0; i < values.length; i++) values[i] = signalStruct(values[i])
   }
 
   return values
