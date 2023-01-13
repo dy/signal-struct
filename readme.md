@@ -57,5 +57,6 @@ Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usig
 ## Alternatives
 
 * [deepsignal](https://github.com/luisherranz/deepsignal)
+* [@deepsignal/preact](https://github.com/EthanStandel/deepsignal/tree/main/packages/preact)
 
 <p align="center"><a href="https://github.com/krsnzd/license/">🕉</a></p>
