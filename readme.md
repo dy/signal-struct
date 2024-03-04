@@ -56,6 +56,7 @@ Supported signals: [@preact/signals](https://github.com/preactjs/signals), [usig
 
 ## Alternatives
 
+* [preact-observables](https://github.com/melnikov-s/preact-observables)
 * [deepsignal](https://github.com/luisherranz/deepsignal)
 * [@deepsignal/preact](https://github.com/EthanStandel/deepsignal/tree/main/packages/preact)
 * [preact-observables](https://github.com/melnikov-s/preact-observables)
